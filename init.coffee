@@ -1,67 +1,3 @@
-# Your init script
-#
-# Atom will evaluate this file each time a new window is opened. It is run
-# after packages are loaded/activated and after the previous editor state
-# has been restored.
-#
-# An example hack to log to the console when each text editor is saved.
-#
-
-
-# atom.workspace.observeTextEditors (editor) ->
-#   editor.onDidSave ->
-#     console.log "Saved! #{editor.getPath()}"
-atom.commands.add 'atom-text-editor', 'custom:tab-new-line-or-indent', ->
-  editor = atom.workspace.getActiveTextEditor()
-  pos = editor.getCursorScreenPosition()
-  text = editor.lineTextForScreenRow(pos["row"])
-  text = text.replace /^\s+|\s+$/g, ""
-  if text == ""
-    editor.insertText("    ")
-  else
-    atom.commands.dispatch(atom.views.getView(editor), 'editor:indent-selected-rows')
-
-'''
-atom.commands.add 'atom-text-editor', 'custom:test-sniper', ->
-  editor = atom.workspace.getActiveTextEditor()
-  open_file_path = editor.getPath()
-  if open_file_path
-    project_folders = atom.project.getPaths()
-    for project in project_folders
-      open_file_path = open_file_path.replace project, "."
-    open_file_path = open_file_path.replace /\\/g, "/"
-    selection = editor.getLastSelection()
-    selected_text = selection.getText()
-    if selected_text != ""
-      open_file_path = open_file_path + "::" + selected_text
-    atom.clipboard.write(open_file_path)
-    atom.notifications.addInfo("Sniped:  " + open_file_path)
-  else
-    atom.notifications.addWarning("Couldn't snipe test, file not saved?")
-
-atom.commands.add 'atom-text-editor', 'custom:import-sniper', ->
-  editor = atom.workspace.getActiveTextEditor()
-  open_file_path = editor.getPath()
-  import_text = ""
-  if open_file_path
-    for project in atom.project.getPaths()
-      if open_file_path.startsWith(project + "\\")
-        import_text = open_file_path.replace project + "\\", ""
-        import_text = import_text.replace /\\/g, "."
-        import_text = import_text.replace /.py/g, ""
-        if import_text != ""
-          selection = editor.getLastSelection()
-          selected_text = selection.getText()
-          if selected_text != ""
-            import_text = "from " + import_text + " import " + selected_text
-          else
-            import_text = "import " + import_text
-          atom.clipboard.write(import_text)
-          atom.notifications.addInfo("Sniped:  " + import_text)
-        break
-  if import_text == ""
-    atom.notifications.addWarning("Couldn't snipe import, current file not in an open project.")
-
 editor = atom.workspace.getActiveTextEditor()
 
 
@@ -117,20 +53,28 @@ atom.commands.add 'atom-text-editor', 'custom:split-line-by-closures', ->
         o_brkt_idx = row_text.indexOf("[")
         c_brkt_idx = row_text.indexOf("]")
         complete_brkts = o_brkt_idx != -1 and c_brkt_idx != -1 and o_brkt_idx != c_brkt_idx - 1
-        if complete_parens and complete_brkts
-            if o_paren_idx < o_brkt_idx
-                new_lines = split_first_last(row_text, "(", ")")
-            else if o_paren_idx > o_brkt_idx
-                new_lines = split_first_last(row_text, "[", "]")
-        else if complete_parens
-            new_lines = split_first_last(row_text, "(", ")")
-        else if complete_brkts
-            new_lines = split_first_last(row_text, "[", "]")
-        else
+        o_brace_idx = row_text.indexOf("{")
+        c_brace_idx = row_text.indexOf("}")
+        complete_braces = o_brace_idx != -1 and c_brace_idx != -1 and o_brace_idx != c_brace_idx - 1
+        indecies = [o_paren_idx, o_brkt_idx, o_brace_idx]
+        indecies.sort()
+        indecies = indecies.filter (x) -> x != -1
+        console.log indecies
+        console.log complete_parens
+        console.log complete_brkts
+        console.log complete_braces
+        console.log indecies
+        if indecies == []
             continue
-        editor.setTextInBufferRange(
-            [[row, 0], [row, row_text.length]], new_lines.join("\n")
-        )
+        if complete_parens and o_paren_idx == indecies[0]
+            first = ["(", ")"]
+        else if complete_brkts and o_brkt_idx == indecies[0]
+            first = ["[", "]"]
+        else if complete_braces and o_brace_idx == indecies[0]
+            first = ["{", "}"]
+        console.log 'first', first
+        new_lines = split_first_last(row_text, first[0], first[1])
+        editor.setTextInBufferRange([[row, 0], [row, row_text.length]], new_lines.join("\n"))
         for _, n in long_lines
             long_lines[n] += 2
         cursor_pos = editor.getCursorScreenPositions()
@@ -236,10 +180,10 @@ atom.commands.add 'atom-text-editor', 'custom:import-sniper', ->
           if selected_text != ""
             import_text = "from " + import_text + " import " + selected_text
           else
-            import_text = "import " + import_text
+            split_text = import_text.split(".")
+            import_text = "from " + split_text[0..-2].join(".") + " import " + split_text[-1..]
           atom.clipboard.write(import_text)
           atom.notifications.addInfo("Sniped:  " + import_text)
         break
   if import_text == ""
     atom.notifications.addWarning("Couldn't snipe import, current file not in an open project.")
-'''
