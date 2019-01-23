@@ -54,7 +54,9 @@
       linterDecorationsZIndex: 0
       selection: true
       selectionDecorationsZIndex: 0
+  "split-diff":
+    ignoreWhitespace: true
   welcome:
     showOnStartup: false
   "windows-context-menu":
-    lastLaunchPath: "C:\\Users\\plafond\\AppData\\Local\\atom\\app-1.24.0\\atom.exe"
+    lastLaunchPath: "C:\\Users\\plafond\\AppData\\Local\\atom\\app-1.33.0\\atom.exe"
