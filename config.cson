@@ -21,7 +21,6 @@
       "minimap-find-and-replace"
       "minimap-cursorline"
       "minimap-highlight-selected"
-      "minimap-linter"
       "minimap-selection"
     ]
     telemetryConsent: "no"
@@ -32,16 +31,16 @@
     uriHandlerRegistration: "always"
   editor:
     fontFamily: "roboto mono"
-    fontSize: 15
+    fontSize: 13
     invisibles: {}
     tabLength: 4
     tabType: "soft"
   "exception-reporting":
     userId: "1bbd78be-de05-48d1-84d0-c680c93638fa"
   "linter-flake8":
-    maxLineLength: 80
-  "linter-ui-default":
-    panelHeight: 81
+    executablePath: "C:\\Python310\\Scripts\\flake8"
+    maxLineLength: 120
+  "linter-ui-default": {}
   minimap:
     plugins:
       cursorline: true
@@ -54,9 +53,11 @@
       linterDecorationsZIndex: 0
       selection: true
       selectionDecorationsZIndex: 0
+  "python-autopep8":
+    maxLineLength: 120
   "split-diff":
     ignoreWhitespace: true
   welcome:
     showOnStartup: false
   "windows-context-menu":
-    lastLaunchPath: "C:\\Users\\paula\\AppData\\Local\\atom\\app-1.54.0\\atom.exe"
+    lastLaunchPath: "C:\\Users\\pld4\\AppData\\Local\\atom\\app-1.60.0\\atom.exe"
